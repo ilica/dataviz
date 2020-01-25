@@ -9,22 +9,50 @@ function setup() {
 function draw() {
   background(0);
 
- // textSize(32);
- // fill(180);
- // text(hour(), 10, 30);
- // fill(100);
- // text(minute(), 10, 60);
- // fill(0);
- // text(second(), 10, 90);
-
   fill(255);
   strokeWeight(0);
-  ellipse(width/2, height*3/4, 72, 72);
+  //white outline
+  ellipse(width/2, height*3/4+25, 72, 72);
   rect(width/2-25, height/4-110, 50, 400, 20);
 
+  first_notch = 58
+  last_notch = 434
+
+  //hour notches
+  for (x = 0; x<14; x++) {
+    y_coord = x*((-first_notch+last_notch)/13)+first_notch
+
+    rect(width/2+24, y_coord, 20, 2);
+  }
+
+  //minute notches
+  for (x = 0; x<(13*4); x++) {
+    rect(width/2+24, x*((-first_notch+last_notch)/(13*4))+first_notch, 10, 2);
+  }
+
+  //half-hour notches
+  for (x = 0; x<(13*2); x++) {
+    rect(width/2+24, x*((-first_notch+last_notch)/(13*2))+first_notch, 14, 2);
+  }
+
+  //red fill
   fill(255, 0 ,0);
-  rect(width/2-15, height/4+50, 30, 200);
-  ellipse(width/2, height*3/4, 60, 60);
+  current_hour = hour();
+  if (hour()>12){
+    current_hour=hour()-12;
+  }
+
+  print(current_hour)
+
+
+
+  ellipse(width/2, height*3/4+25, 60, 60);
+  scaled_time = ((current_hour/12)+(55/(12*60))+(second()/(12*60*60)))*(407-58);
+  print(scaled_time)
+  rect(width/2-15, 407-scaled_time, 30, scaled_time);
+  rect(width/2-15, 407, 30, 20);
+
+
 
   noFill();
 
@@ -42,9 +70,9 @@ class Particle {
   }
   reset() {
     this.x = width/2;
-    this.y = -400;
+    this.y = 0;
     this.vy = 10;
-    this.maxy = this.y + height;
+    this.maxy = 404-scaled_time;
     this.r = 0;
     this.tr = 50;
     this.w = 2;
