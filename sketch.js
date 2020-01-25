@@ -1,4 +1,6 @@
 var particles = [];
+var previous_drop_second;
+var previous_minute;
 
 function setup() {
   createCanvas(600, 600);
@@ -42,24 +44,39 @@ function draw() {
     current_hour=hour()-12;
   }
 
-  print(current_hour)
-
-
-
   ellipse(width/2, height*3/4+25, 60, 60);
-  scaled_time = ((current_hour/12)+(55/(12*60))+(second()/(12*60*60)))*(407-58);
-  print(scaled_time)
+  scaled_time = ((current_hour/12)+(minute()/(12*60))+(second()/(12*60*60)))*(407-58);
+
   rect(width/2-15, 407-scaled_time, 30, scaled_time);
   rect(width/2-15, 407, 30, 20);
 
-
-
   noFill();
+  current_second = Math.floor(new Date().getTime()/1000)
+  if (previous_drop_second == undefined){
+    previous_drop_second=current_second;
+  }
 
-  if (particles.length < 1) particles.push(new Particle());
+  if (current_second>previous_drop_second) {
+    particles.push(new Particle());
+    previous_drop_second=current_second
+  }
+
   for (var i = 0; i < particles.length; i++) {
     particles[i].update();
     particles[i].display();
+  }
+
+
+  //print minute to console
+  current_minute = Math.floor(current_second/60)
+  if (previous_minute == undefined){
+    print("Current Minute:")
+    print(minute())
+    previous_minute=current_minute;
+  }
+  if (current_minute>previous_minute){
+    print(minute())
+    previous_minute=current_minute
   }
 }
 
@@ -72,7 +89,7 @@ class Particle {
     this.x = width/2;
     this.y = 0;
     this.vy = 10;
-    this.maxy = 404-scaled_time;
+    this.maxy = 403-scaled_time;
     this.r = 0;
     this.tr = 50;
     this.w = 2;
@@ -83,7 +100,11 @@ class Particle {
     } else {
       this.r++;
     }
-    if (this.r > this.tr) this.reset();
+    if (this.r > this.tr) {
+      this.reset();
+      // i know this is a bad idea and objects shouldnt modify lists of themselves...but this was fast right now :P
+      particles.shift()
+    }
   }
   display() {
     strokeWeight(this.w);
